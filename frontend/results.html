@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Custom PC Build</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="results-page">
+    <div class="container">
+        <h1>Your AI-Generated PC Build</h1>
+        <div class="table-container">
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Specs</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- Component rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+        <div id="benchmarks-container"></div>
+        <div id="compatibility-container"></div>
+        <div id="notes-container"></div>
+        <div class="summary">
+            <h2>Total Build Cost: <span id="total-cost"></span></h2>
+        </div>
+        <div class="actions">
+            <a href="index.html" class="button">Start Over</a>
+            <button id="share-button" class="button">Share Build</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

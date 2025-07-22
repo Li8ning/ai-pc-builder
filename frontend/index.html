@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PC Builder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Build Your Custom PC</h1>
+        <form id="build-form">
+            <label for="budget">Budget (INR): <span id="budget-value">₹100,000</span></label>
+            <input type="range" id="budget" name="budget" min="20000" max="500000" value="100000" step="1000" required>
+
+            <label>Primary Use:</label>
+            <div class="checkbox-group" id="pc-type-group">
+                <input type="radio" id="gaming" name="pc_type" value="Gaming" checked>
+                <label for="gaming">Gaming</label>
+                <input type="radio" id="office" name="pc_type" value="Office Work">
+                <label for="office">Office Work</label>
+                <input type="radio" id="editing" name="pc_type" value="Video Editing">
+                <label for="editing">Video Editing</label>
+                <input type="radio" id="general" name="pc_type" value="General Use">
+                <label for="general">General Use</label>
+            </div>
+
+            <label>Form Factor:</label>
+            <div class="checkbox-group">
+                <input type="radio" id="desktop" name="form_factor" value="Desktop" checked>
+                <label for="desktop">Desktop</label>
+                <input type="radio" id="laptop" name="form_factor" value="Laptop">
+                <label for="laptop">Laptop</label>
+            </div>
+
+            <div class="config-toggle">
+                <button type="button" id="advanced-toggle" class="button">Advanced Configuration</button>
+            </div>
+
+            <div id="advanced-options" style="display: none;">
+                <label>Style Preference:</label>
+                <div class="checkbox-group" id="style-group">
+                    <input type="radio" id="style-any" name="style" value="Any" checked>
+                    <label for="style-any">Any</label>
+                    <input type="radio" id="rgb" name="style" value="Gaming RGB">
+                    <label for="rgb">Gaming RGB</label>
+                    <input type="radio" id="minimal" name="style" value="Clean/Minimal">
+                    <label for="minimal">Clean/Minimal</label>
+                    <input type="radio" id="budget-style" name="style" value="Budget-Focused">
+                    <label for="budget-style">Budget-Focused</label>
+                </div>
+
+                <label>CPU Brand Preference:</label>
+                <div class="checkbox-group">
+                    <input type="radio" id="cpu-any" name="cpu_brand" value="Any" checked>
+                    <label for="cpu-any">Any</label>
+                    <input type="radio" id="cpu-intel" name="cpu_brand" value="Intel">
+                    <label for="cpu-intel">Intel</label>
+                    <input type="radio" id="cpu-amd" name="cpu_brand" value="AMD">
+                    <label for="cpu-amd">AMD</label>
+                </div>
+
+                <label>GPU Brand Preference:</label>
+                <div class="checkbox-group">
+                    <input type="radio" id="gpu-any" name="gpu_brand" value="Any" checked>
+                    <label for="gpu-any">Any</label>
+                    <input type="radio" id="gpu-nvidia" name="gpu_brand" value="NVIDIA">
+                    <label for="gpu-nvidia">NVIDIA</label>
+                    <input type="radio" id="gpu-amd" name="gpu_brand" value="AMD">
+                    <label for="gpu-amd">AMD</label>
+                </div>
+
+                <label>Include/Exclude Accessories (Optional):</label>
+                <div class="tri-state-group">
+                    <div class="tri-state-checkbox" data-value="Monitor">Monitor</div>
+                    <div class="tri-state-checkbox" data-value="Keyboard">Keyboard</div>
+                    <div class="tri-state-checkbox" data-value="Mouse">Mouse</div>
+                    <div class="tri-state-checkbox" data-value="Mousepad">Mousepad</div>
+                    <div class="tri-state-checkbox" data-value="Headphones">Headphones</div>
+                    <div class="tri-state-checkbox" data-value="Mic">Mic</div>
+                    <div class="tri-state-checkbox" data-value="Webcam">Webcam</div>
+                    <div class="tri-state-checkbox" data-value="Speakers">Speakers</div>
+                </div>
+            </div>
+
+            <button type="submit">Get Recommendations</button>
+        </form>
+        <div id="loader" class="loader" style="display: none;"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
