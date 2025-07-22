@@ -15,3 +15,5 @@ npm-debug.log
 # Production build (if any)
 dist/
 build/
+.vercel
+.env*.local

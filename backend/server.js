@@ -12,6 +12,9 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.post('/api/get-build-recommendation', async (req, res) => {
     try {
         const result = await getAiRecommendation(req.body);
+        console.log("--- SENDING TO FRONTEND ---");
+        console.log(JSON.stringify(result, null, 2));
+        console.log("---------------------------");
         res.json(result);
     } catch (error) {
         console.error('Error getting AI recommendation:', error);
@@ -21,10 +24,6 @@ app.post('/api/get-build-recommendation', async (req, res) => {
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
-
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
 });
 
 module.exports = app;

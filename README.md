@@ -9,7 +9,7 @@ The application will consist of a frontend where users can input their preferenc
 ### Tech Stack
 - **Frontend:** HTML, CSS, Vanilla JavaScript
 - **Backend:** Node.js, Express.js
-- **AI Service:** OpenRouter API (with DeepSeek model)
+- **AI Service:** OpenAI API (GPT-4o)
 
 ## 2. Application Flow
 
@@ -122,32 +122,92 @@ Here is the step-by-step plan for implementation:
 - [ ] **9. Testing:**
     - Test the full end-to-end flow with various inputs.
 
-## 7. Running the Application
+## 7. Running the Application Locally (Vercel Development)
 
-To run the application, follow these steps:
+To run the application locally using the Vercel CLI (recommended for Vercel deployments):
+
+1.  **Install Vercel CLI (if you haven't already):**
+    ```bash
+    npm install -g vercel
+    ```
+
+2.  **Navigate to your project directory:**
+    ```bash
+    cd path/to/pc-builder-app
+    ```
+
+3.  **Log in to Vercel (if not already logged in):**
+    ```bash
+    vercel login
+    ```
+    Follow the prompts to log in via your web browser.
+
+4.  **Link your project to V Vercel (if not already linked):**
+    If this is your first time running `vercel dev` for this project, you'll be asked to link it to a Vercel project.
+    ```bash
+    vercel link
+    ```
+    Follow the prompts to link to your existing Vercel project.
+
+5.  **Pull Environment Variables Locally:**
+    Ensure your `OPENAI_API_KEY` is set in your Vercel project's environment variables (in the Vercel dashboard). Then, pull them locally:
+    ```bash
+    vercel env pull .env.local
+    ```
+    This creates a `.env.local` file with your Vercel environment variables.
+
+6.  **Run the application locally:**
+    ```bash
+    vercel dev
+    ```
+    The application will start on a local development server (usually `http://localhost:3000`).
+
+7.  **Troubleshooting `EADDRINUSE` (Address already in use) Error:**
+    If you encounter an `EADDRINUSE` error, it means another process is already using port `3000`. This often happens if you have multiple instances of `vercel dev` running or a previous instance didn't shut down cleanly.
+
+    *   **Ensure only ONE `vercel dev` instance is running:**
+        *   Check all open terminals (including your editor's integrated terminals).
+        *   Terminate any running `vercel dev` processes (usually by pressing `Ctrl + C` within that terminal).
+    *   **Find and Kill the Process (Windows - More Aggressive):**
+        1.  Open Command Prompt as **Administrator**.
+        2.  Run the following command to find the `node.exe` process using port 3000:
+            ```bash
+            for /f "tokens=5" %a in ('netstat -ano ^| findstr :3000') do @tasklist /fi "PID eq %a" | findstr /i "node.exe"
+            ```
+            This command will output the `Image Name` (e.g., `node.exe`) and its `PID`.
+        3.  Note the `PID` of the `node.exe` process.
+        4.  Run: `taskkill /PID YOUR_PID_HERE /F` (Replace `YOUR_PID_HERE` with the actual PID).
+        5.  If you still see `TIME_WAIT`, `FIN_WAIT_2`, or `CLOSE_WAIT` states after this, these are transient states that will clear themselves in a minute or two. Wait a moment and try `vercel dev` again.
+    *   **Find and Kill the Process (macOS/Linux):**
+        1.  Open Terminal.
+        2.  Run: `lsof -i :3000`
+        3.  Note the `PID` from the output.
+        4.  Run: `kill -9 YOUR_PID_HERE` (Replace `YOUR_PID_HERE` with the actual PID).
+    *   After clearing the port (either by killing a `LISTENING` process or waiting for transient states to clear), try `vercel dev` again.
+
+## 8. Running the Application Locally (Node.js Direct)
+
+You can still run the application directly with Node.js for basic backend testing, but it won't fully simulate the Vercel environment.
 
 1.  **Navigate to the project directory:**
-    Open your terminal and change the directory to where you've saved the project.
     ```bash
     cd path/to/pc-builder-app
     ```
 
 2.  **Install dependencies:**
-    If you haven't already, install the necessary Node.js packages.
     ```bash
     npm install
     ```
 
 3.  **Configure Environment Variables:**
-    Open the `pc-builder-app/.env` file and set the following variables:
-    - `OPENROUTER_API_KEY`: Your API key from OpenRouter.
-    - `HTTP_REFERER`: The URL of your application (e.g., `http://localhost:3000`). This is recommended by OpenRouter.
+    Create a `.env` file in the project root and set:
+    - `OPENAI_API_KEY=YOUR_OPENAI_API_KEY`
 
 4.  **Start the server:**
     ```bash
     npm start
     ```
-    The server will start on `http://localhost:3000`. If you see an `EADDRINUSE` error, it means the port is already being used by another application (likely a previous instance of this server).
+    The server will start on `http://localhost:3000`.
 
 5.  **Open the application:**
     Open your web browser and navigate to `http://localhost:3000`.

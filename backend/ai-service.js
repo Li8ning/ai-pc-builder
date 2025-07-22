@@ -23,7 +23,7 @@ async function getAiRecommendation(preferences) {
         '4. If the total cost is over budget, suggest downgrades. If under budget, suggest where to spend the extra money for the best performance gains.',
         '',
         'CRITICAL Instructions:',
-        '1. Pricing: Search the internet for the most up-to-date prices in Indian Rupees (INR). It is crucial that the prices are as close to real-time as possible.',
+        '1. Web Search: If you have web browsing capabilities, use them to research and select the most suitable components, verify compatibility, and find the most up-to-date prices in Indian Rupees (INR). If you do not have web browsing capabilities, use your internal knowledge base.',
         '3. Laptops: If the user selects "Laptop", provide the full, specific model name.',
         '4. Output Format: You MUST return the response as a single JSON object that strictly follows the schema below. Do not add any extra text or explanations outside of the JSON object.',
         '',
@@ -57,25 +57,26 @@ async function getAiRecommendation(preferences) {
         '```'
     ].join('\n');
 
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    const httpReferer = process.env.HTTP_REFERER;
-    const apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+    const apiKey = process.env.OPENAI_API_KEY;
+    const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
     try {
         const response = await axios.post(apiUrl, {
-            model: 'deepseek/deepseek-chat-v3-0324:free',
+            model: 'gpt-4o-mini', // Using gpt-4o-mini for web browsing capabilities
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
             response_format: { type: "json_object" },
         }, {
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
-                'HTTP-Referer': httpReferer,
-                'X-Title': 'AI PC Builder' // Optional: Helps identify your app on OpenRouter
+                'Content-Type': 'application/json'
             }
         });
 
         const content = response.data.choices[0].message.content;
+        console.log("--- AI RAW RESPONSE ---");
+        console.log(content);
+        console.log("-----------------------");
         // The AI's response is a stringified JSON, so we need to parse it.
         const data = JSON.parse(content);
         return data;
