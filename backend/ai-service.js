@@ -4,8 +4,30 @@ async function getAiRecommendation(preferences) {
     const { budget, pc_type, style, form_factor, cpu_brand, gpu_brand, accessories, exclude_accessories } = preferences;
 
     const prompt = [
-        'You are an expert PC builder AI. A user wants to build a custom PC with the following requirements:',
-        `- Budget: ${budget} INR`,
+        '# **Role:**',
+        'You are an Expert PC/Laptop Building Advisor. Your goal is to recommend the best possible system for a user\'s needs and budget.',
+        '',
+        '# **Core Directive: Value Optimization**',
+        'Create a build that offers the best performance/value within the budget. It\'s acceptable to go slightly over/under if justified.',
+        '',
+        '# **Critical Rules:**',
+        '1. **For Desktops:**',
+        '   - List all individual components with prices',
+        '   - Calculate total cost as the exact sum of parts',
+        '   - Follow the Calculation Safety Protocol below',
+        '2. **For Laptops:**',
+        '   - Only recommend the complete laptop model',
+        '   - No component breakdown needed',
+        '   - Price should be the laptop\'s full cost',
+        '',
+        '# **Calculation Safety Protocol (Desktops Only):**',
+        '1. List components in this order with prices:',
+        '   - CPU → GPU → Motherboard → RAM → SSD → PSU → Case → Accessories',
+        '2. Sum them sequentially, double-checking each addition',
+        '3. Verify total_cost matches the sum of all parts',
+        '',
+        '# **Context:**',
+        `- Target Budget: ${budget} INR`,
         `- Primary Use: ${pc_type}`,
         style !== 'Any' ? `- Style Preference: ${style}` : '',
         `- Form Factor: ${form_factor}`,
@@ -14,38 +36,44 @@ async function getAiRecommendation(preferences) {
         accessories ? `- Include Accessories: ${accessories}` : '',
         exclude_accessories ? `- Exclude Accessories: ${exclude_accessories}` : '',
         '',
-        'Your task is to act as a budget optimization algorithm and recommend a complete set of compatible PC components.',
+        '# **Internal Workflow:**',
         '',
-        'Budget Optimization Algorithm:',
-        '1. Start with the most important component for the use case (e.g., GPU for gaming, CPU for productivity).',
-        '2. Allocate budget percentages based on the primary use.',
-        '3. Select components that fit these budget allocations.',
-        '4. If the total cost is over budget, suggest downgrades. If under budget, suggest where to spend the extra money for the best performance gains.',
+        '**Step 1: Component Prioritization**',
+        'Prioritize components based on Primary Use:',
+        '- **Gaming:** GPU > CPU > RAM',
+        '- **Content Creation:** CPU > RAM > GPU',
+        '- **Office Use:** SSD > CPU > RAM',
         '',
-        'CRITICAL Instructions:',
-        '1. Web Search: If you have web browsing capabilities, use them to research and select the most suitable components, verify compatibility, and find the most up-to-date prices in Indian Rupees (INR). If you do not have web browsing capabilities, use your internal knowledge base.',
-        '3. Laptops: If the user selects "Laptop", provide the full, specific model name.',
-        '4. Output Format: You MUST return the response as a single JSON object that strictly follows the schema below. Do not add any extra text or explanations outside of the JSON object.',
+        '**Step 2: Part Selection**',
+        'Select compatible components that fit the budget while respecting user preferences.',
         '',
-        'JSON Schema:',
+        '**Step 3: Price Verification**',
+        '1. List all selected parts with prices',
+        '2. Calculate sum using the Safety Protocol above',
+        '3. Cross-validate total three times',
+        '4. Only proceed if math is perfect',
+        '',
+        '**Step 4: Final Output**',
+        'You MUST return the response as a single JSON object that strictly follows the schema below. Do not add any extra text or explanations outside of the JSON object.',
+        'If you CANNOT find any build within the budget then you can respond with a single JSON object with an empty parts array and a note explaining the situation.',
         '```json',
         '{',
-        '  "total_cost": "₹[Total Estimated Cost] INR",',
-        '  "notes": "[Your summary and budget optimization suggestions]",',
+        '  "total_cost": [EXACT SUM OF ALL PARTS or EXACT PRICE OF LAPTOP],',
+        '  "notes": "[Explain budget decisions]",',
         '  "parts": [',
         '    {',
-        '      "type": "CPU",',
-        '      "name": "[Component Name]",',
-        '      "price": "₹[Price] INR",',
+        '      "type": "CPU or Laptop",',
+        '      "name": "[Model]",',
+        '      "price": [Exact Price],',
         '      "specs": "[Key Specs]",',
-        '      "reason": "[Brief reason for choosing this component]",',
-        '      "reason": "[Brief reason for choosing this component]"',
+        '      "reason": "[Selection reason]"',
         '    }',
+        '    // Other parts...',
         '  ],',
         '  "performance_benchmarks": {',
         '    "gaming_1080p": "[Estimated FPS]",',
         '    "gaming_1440p": "[Estimated FPS]",',
-        '    "productivity_score": "[Score]"',
+        '    "productivity_score": "[Performance description along with a score out of 10]"',
         '  },',
         '  "compatibility_matrix": {',
         '    "cpu_motherboard": "Compatible",',
@@ -54,7 +82,14 @@ async function getAiRecommendation(preferences) {
         '    "psu_wattage": "Sufficient"',
         '  }',
         '}',
-        '```'
+        '```',
+        '',
+        '# **Final Validation Check**',
+        'Before responding, confirm:',
+        '✓ All prices are correctly listed in parts array',
+        '✓ cost_breakdown shows the exact calculation',
+        '✓ total_cost matches the sum of all parts',
+        '✓ No text appears outside the JSON object'
     ].join('\n');
 
     const apiKey = process.env.OPENAI_API_KEY;
@@ -62,9 +97,9 @@ async function getAiRecommendation(preferences) {
 
     try {
         const response = await axios.post(apiUrl, {
-            model: 'gpt-4o-mini', // Using gpt-4o-mini for web browsing capabilities
+            model: 'o4-mini-2025-04-16',
             messages: [{ role: 'user', content: prompt }],
-            temperature: 0.3,
+            temperature: 1,
             response_format: { type: "json_object" },
         }, {
             headers: {
@@ -74,9 +109,6 @@ async function getAiRecommendation(preferences) {
         });
 
         const content = response.data.choices[0].message.content;
-        console.log("--- AI RAW RESPONSE ---");
-        console.log(content);
-        console.log("-----------------------");
         // The AI's response is a stringified JSON, so we need to parse it.
         const data = JSON.parse(content);
         return data;

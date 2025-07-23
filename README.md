@@ -1,34 +1,25 @@
 # AI-Powered PC Builder Web App
 
-This document outlines the plan for creating a web application that helps users build custom PC configurations using AI recommendations.
+This document outlines the plan for creating a web application that helps users build custom PC configurations using AI-powered recommendations.
 
 ## 1. Project Overview
 
-The application will consist of a frontend where users can input their preferences and a backend that communicates with the Moonshot Kimi AI to generate PC build recommendations.
+The application consists of a frontend where users input their preferences and a backend that communicates with the OpenAI API to generate PC build recommendations.
 
 ### Tech Stack
 - **Frontend:** HTML, CSS, Vanilla JavaScript
 - **Backend:** Node.js, Express.js
-- **AI Service:** OpenAI API (GPT-4o)
+- **AI Service:** OpenAI API (o4-mini-2025-04-16)
 
 ## 2. Application Flow
 
-The following diagram illustrates the user journey and system interactions:
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant Backend
-    participant MoonshotAI
-
-    User->>Frontend: Fills out PC preferences form (Budget in INR)
-    Frontend->>Backend: POST /api/get-build-recommendation with form data
-    Backend->>MoonshotAI: Sends formatted prompt instructing AI to search for parts and prices in INR
-    MoonshotAI-->>Backend: Returns recommended build with prices in INR (JSON)
-    Backend-->>Frontend: Sends recommended build as response
-    Frontend->>User: Displays recommended components and total cost in INR
-```
+User flow:
+1. User fills out PC preferences form (Budget in INR)
+2. Frontend sends POST `/api/get-build-recommendation` with form data
+3. Backend sends formatted prompt to OpenAI API
+4. OpenAI returns recommended build with prices in INR (JSON)
+5. Backend sends recommended build as response
+6. Frontend displays recommended components and total cost in INR
 
 ## 3. File Structure
 
@@ -41,88 +32,63 @@ sequenceDiagram
     - script.js        # Frontend logic for form handling and API calls
   /backend
     - server.js        # Express server setup and API routes
-    - ai-service.js    # Module for Moonshot Kimi AI integration
+    - ai-service.js    # Module for OpenAI API integration
   - package.json
   - README.md
 ```
 
 ## 4. AI Prompt Structure
 
-When calling the Moonshot Kimi AI, the backend will construct a prompt similar to this:
-
-> "You are an expert PC builder. A user wants to build a custom PC.
-> **Budget:** ₹[budget] INR
-> **Primary Use:** [pc_type]
-> **Style Preference:** [style]
-> **Form Factor:** [form_factor]
->
-> Please recommend a complete set of compatible PC components (CPU, GPU, Motherboard, RAM, Storage, Power Supply, Case) that fits within the budget.
->
-> **Instructions:**
-> 1.  Search the internet for the latest components and their prices in **Indian Rupees (INR)** from popular Indian online retailers.
-> 2.  Ensure all components are compatible with each other (e.g., CPU socket and motherboard).
-> 3.  The total cost should not exceed the user's budget.
-> 4.  For each component, provide the name, estimated price in INR, key specs, and a brief reason for your choice.
-> 5.  Return the response as a JSON object."
+When calling the OpenAI API, the backend constructs a prompt instructing the AI to:
+- Recommend a complete set of compatible PC components (CPU, GPU, Motherboard, RAM, Storage, Power Supply, Case) that fits within the user’s budget
+- Ensure all components are compatible
+- Provide the name, estimated price in INR, key specs, and a brief reason for each choice
+- Return the response as a JSON object
 
 ## 5. Backend API
 
 ### Endpoint: `POST /api/get-build-recommendation`
 
-- **Request Body:**
-  ```json
-  {
-    "budget": 100000,
-    "pc_type": "Gaming",
-    "style": "Gaming RGB",
-    "form_factor": "Desktop"
-  }
-  ```
-- **Success Response (200 OK):**
-  ```json
-  {
-    "total_cost": 98500,
-    "parts": [
-      { "type": "CPU", "name": "AMD Ryzen 5 5600X", "price": 15000, "specs": "6-core, 12-thread", "reason": "Excellent price-to-performance for gaming." },
-      { "type": "GPU", "name": "NVIDIA GeForce RTX 3060 Ti", "price": 40000, "specs": "8GB GDDR6", "reason": "Great for 1080p/1440p gaming." }
-    ]
-  }
-  ```
-- **Error Response (500 Internal Server Error):**
-  ```json
-  {
-    "error": "Failed to get recommendations from AI service."
-  }
-  ```
+**Request Body:**
+```json
+{
+  "budget": 100000,
+  "pc_type": "Gaming",
+  "style": "Gaming RGB",
+  "form_factor": "Desktop"
+}
+```
+**Success Response (200 OK):**
+```json
+{
+  "total_cost": 98500,
+  "parts": [
+    { "type": "CPU", "name": "AMD Ryzen 5 5600X", "price": 15000, "specs": "6-core, 12-thread", "reason": "Excellent price-to-performance for gaming." },
+    { "type": "GPU", "name": "NVIDIA GeForce RTX 3060 Ti", "price": 40000, "specs": "8GB GDDR6", "reason": "Great for 1080p/1440p gaming." }
+  ]
+}
+```
+**Error Response (500 Internal Server Error):**
+```json
+{
+  "error": "Failed to get recommendations from AI service."
+}
+```
 
 ## 6. Development Plan
 
-Here is the step-by-step plan for implementation:
+Step-by-step implementation:
+- Setup project structure
+- Create `package.json` and install dependencies (`express`, `axios`)
+- Develop backend (`server.js`): Express server and `/api/get-build-recommendation` endpoint
+- Implement AI service (`ai-service.js`): Construct prompt for OpenAI API and handle response
+- Build frontend form (`index.html`, `style.css`): User input form with budget in INR and clean layout
+- Implement frontend logic (`script.js`): Handle form submission, call backend API, display results
+- Build results page (`results.html`): Show recommended parts and total cost in INR
+- Add features: Form validation, loading spinners, error messages
+- Test end-to-end flow with various inputs
 
-- [ ] **1. Setup Project Structure:** Create the directories and empty files.
-- [ ] **2. Create `package.json`:** Define dependencies (`express`, `axios`).
-- [ ] **3. Develop Backend (`server.js`):**
-    - Set up Express server.
-    - Create the `/api/get-build-recommendation` endpoint.
-- [ ] **4. Implement AI Service (`ai-service.js`):**
-    - Create a function to construct the detailed prompt for the Moonshot Kimi AI, instructing it to search for parts and prices in INR.
-    - Implement the API call logic.
-- [ ] **5. Build Frontend Form (`index.html`, `style.css`):**
-    - Create the user input form with budget in INR.
-    - Add basic styling for a clean layout.
-- [ ] **6. Implement Frontend Logic (`script.js`):**
-    - Handle form submission.
-    - Call the backend API.
-    - Store results and redirect to `results.html`.
-- [ ] **7. Build Results Page (`results.html`):**
-    - Display the recommended parts and total cost in INR.
-- [ ] **8. Add Features:**
-    - Implement form validation.
-    - Add loading spinners and error messages.
-- [ ] **9. Testing:**
-    - Test the full end-to-end flow with various inputs.
-
-## 7. Running the Application Locally (Vercel Development)
+## 7. Running the Application Locally
 
 To run the application locally using the Vercel CLI (recommended for Vercel deployments):
 
@@ -161,29 +127,6 @@ To run the application locally using the Vercel CLI (recommended for Vercel depl
     vercel dev
     ```
     The application will start on a local development server (usually `http://localhost:3000`).
-
-7.  **Troubleshooting `EADDRINUSE` (Address already in use) Error:**
-    If you encounter an `EADDRINUSE` error, it means another process is already using port `3000`. This often happens if you have multiple instances of `vercel dev` running or a previous instance didn't shut down cleanly.
-
-    *   **Ensure only ONE `vercel dev` instance is running:**
-        *   Check all open terminals (including your editor's integrated terminals).
-        *   Terminate any running `vercel dev` processes (usually by pressing `Ctrl + C` within that terminal).
-    *   **Find and Kill the Process (Windows - More Aggressive):**
-        1.  Open Command Prompt as **Administrator**.
-        2.  Run the following command to find the `node.exe` process using port 3000:
-            ```bash
-            for /f "tokens=5" %a in ('netstat -ano ^| findstr :3000') do @tasklist /fi "PID eq %a" | findstr /i "node.exe"
-            ```
-            This command will output the `Image Name` (e.g., `node.exe`) and its `PID`.
-        3.  Note the `PID` of the `node.exe` process.
-        4.  Run: `taskkill /PID YOUR_PID_HERE /F` (Replace `YOUR_PID_HERE` with the actual PID).
-        5.  If you still see `TIME_WAIT`, `FIN_WAIT_2`, or `CLOSE_WAIT` states after this, these are transient states that will clear themselves in a minute or two. Wait a moment and try `vercel dev` again.
-    *   **Find and Kill the Process (macOS/Linux):**
-        1.  Open Terminal.
-        2.  Run: `lsof -i :3000`
-        3.  Note the `PID` from the output.
-        4.  Run: `kill -9 YOUR_PID_HERE` (Replace `YOUR_PID_HERE` with the actual PID).
-    *   After clearing the port (either by killing a `LISTENING` process or waiting for transient states to clear), try `vercel dev` again.
 
 ## 8. Running the Application Locally (Node.js Direct)
 
